@@ -1,0 +1,6 @@
+Flask
+requests
+numpy
+pytesseract
+Pillow
+PyPDF2
