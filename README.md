@@ -1,4 +1,4 @@
-# RAG 本地文档问答系统
+# Local RAG Document QA System | 本地 RAG 文档问答系统
 
 这是一个基于 `Flask + Ollama + Tesseract OCR` 的本地 RAG（Retrieval-Augmented Generation，检索增强生成）项目。它提供了一个简单的网页界面，支持上传文本、PDF 和图片文件，自动提取内容并构建本地知识库，再结合 Ollama 本地大模型完成问答。
 
@@ -192,3 +192,131 @@ http://localhost:5001
 - `README.md`
 
 而 `.idea/` 和运行时上传文件不建议提交到仓库，因此已通过 `.gitignore` 排除。
+
+---
+
+## English Version
+
+### Introduction
+
+This project is a lightweight local RAG (Retrieval-Augmented Generation) application built with `Flask`, `Ollama`, and `Tesseract OCR`. It provides a simple web interface for uploading documents or images, extracting text, building a temporary local knowledge base, retrieving relevant context, and generating answers with a local LLM.
+
+It is suitable for course demos, offline QA prototypes, and small local knowledge retrieval tasks.
+
+### Features
+
+- Supports `txt`, `pdf`, `png`, `jpg`, and `jpeg` uploads
+- Reads text files directly
+- Extracts PDF text with `PyPDF2`
+- Performs OCR on images with `pytesseract`
+- Generates embeddings with Ollama `nomic-embed-text`
+- Retrieves relevant chunks using cosine similarity
+- Generates context-aware answers with local Ollama models
+- Shows both answers and retrieved context in the frontend
+- Supports one-click knowledge-base reset
+
+### Tech Stack
+
+- Backend: Flask
+- Model service: Ollama
+- Embedding model: `nomic-embed-text`
+- LLM: `qwen3:8b`
+- OCR: Tesseract OCR
+- PDF parser: PyPDF2
+- Frontend: HTML, CSS, JavaScript
+
+### Project Structure
+
+```text
+.
+├─ app1.py
+├─ requirements.txt
+├─ README.md
+├─ dummy_document.txt
+├─ static/
+│  └─ welcome_bg.png
+├─ templates/
+│  └─ index.html
+└─ uploaded_documents/
+```
+
+### How It Works
+
+1. Users upload text, PDF, or image files through the web interface.
+2. The backend extracts text based on file type.
+3. Extracted text is split into chunks, mainly by blank lines.
+4. Each chunk is converted into an embedding through Ollama.
+5. The embeddings are stored in memory in the `documents_data` structure.
+6. When a query is submitted, the system computes cosine similarity against stored chunks.
+7. The most relevant chunks are inserted into the prompt and sent to the local LLM.
+
+### Local Setup
+
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Pull and start Ollama models:
+
+```bash
+ollama pull qwen3:8b
+ollama pull nomic-embed-text
+ollama serve
+```
+
+Install Tesseract OCR if image OCR is needed, and make sure the Chinese language pack `chi_sim` is available.
+
+Start the app:
+
+```bash
+python app1.py
+```
+
+Then open:
+
+```text
+http://localhost:5001
+```
+
+### API Endpoints
+
+#### `POST /api/upload_document`
+
+Uploads and processes a document.
+
+#### `POST /api/rag_enhance`
+
+Accepts a user query and returns:
+
+- `enhanced_text`
+- `retrieved_contexts`
+- `context_used_for_prompt`
+
+#### `POST /api/reset_knowledge_base`
+
+Clears the in-memory knowledge base and uploaded runtime files.
+
+### Strengths
+
+- Lightweight and easy to understand
+- Fully local workflow without cloud API dependency
+- Supports plain text, PDF, and image OCR in one project
+- Includes a complete frontend interaction flow for demonstrations
+
+### Limitations
+
+- The knowledge base is stored only in memory
+- The chunking strategy is simple
+- No vector database is used
+- No authentication, persistence, or production deployment configuration
+
+### Suggested Improvements
+
+- Add a vector database such as `FAISS` or `Chroma`
+- Improve Chinese text chunking
+- Support multi-turn conversation memory
+- Add upload history and knowledge-base management UI
+- Improve OCR and PDF error handling
+- Add Docker deployment support
